@@ -1,6 +1,4 @@
-provider "azurerm" { }
-
-
+provider "azurerm" {}
 
 resource "azurerm_resource_group" "sfabric-rg" {
   name     = "${local.resource_group_name}"
@@ -9,7 +7,7 @@ resource "azurerm_resource_group" "sfabric-rg" {
 
 resource "azurerm_virtual_network" "sfabric-net" {
   name                = "${var.vnet_name}"
-  address_space       = ["10.0.0.0/16"]
+  address_space       = ["${var.address_space}"]
   location            = "${azurerm_resource_group.sfabric-rg.location}"
   resource_group_name = "${local.resource_group_name}"
 }
@@ -23,8 +21,8 @@ resource "azurerm_subnet" "subnet1" {
 
 resource "azurerm_public_ip" "sfabric-ip" {
   name                         = "${var.frontend_sfabric}"
-  location            = "${azurerm_resource_group.sfabric-rg.location}"
-  resource_group_name = "${local.resource_group_name}"
+  location                     = "${azurerm_resource_group.sfabric-rg.location}"
+  resource_group_name          = "${local.resource_group_name}"
   public_ip_address_allocation = "static"
   domain_name_label            = "${local.sfabric-dns}"
 
@@ -35,8 +33,8 @@ resource "azurerm_public_ip" "sfabric-ip" {
 
 resource "azurerm_public_ip" "app-ip" {
   name                         = "${var.frontend_app}"
-  location            = "${azurerm_resource_group.sfabric-rg.location}"
-  resource_group_name = "${local.resource_group_name}"
+  location                     = "${azurerm_resource_group.sfabric-rg.location}"
+  resource_group_name          = "${local.resource_group_name}"
   public_ip_address_allocation = "static"
   domain_name_label            = "${local.app-dns}"
 
@@ -55,7 +53,7 @@ resource "azurerm_lb" "sfabric-lb" {
     public_ip_address_id = "${azurerm_public_ip.sfabric-ip.id}"
   }
 
-    frontend_ip_configuration {
+  frontend_ip_configuration {
     name                 = "${var.frontend_app}"
     public_ip_address_id = "${azurerm_public_ip.app-ip.id}"
   }
@@ -100,8 +98,6 @@ resource "azurerm_lb_rule" "app-rule" {
   backend_address_pool_id        = "${azurerm_lb_backend_address_pool.backend.id}"
   probe_id                       = "${azurerm_lb_probe.app-probe.id}"
 }
-
-
 
 resource "azurerm_lb_backend_address_pool" "backend" {
   resource_group_name = "${local.resource_group_name}"
@@ -148,10 +144,10 @@ resource "azurerm_virtual_machine_scale_set" "sfabric-ss" {
   }
 
   storage_profile_data_disk {
-    lun            = 0
-    caching        = "ReadWrite"
-    create_option  = "Empty"
-    disk_size_gb   = 100
+    lun           = 0
+    caching       = "ReadWrite"
+    create_option = "Empty"
+    disk_size_gb  = 100
   }
 
   os_profile {
@@ -168,8 +164,6 @@ resource "azurerm_virtual_machine_scale_set" "sfabric-ss" {
       path     = "/home/azureuser/.ssh/authorized_keys"
       key_data = "${file("~/.ssh/id_rsa.pub")}"
     }
-
-    
   }
 
   network_profile {
@@ -187,5 +181,4 @@ resource "azurerm_virtual_machine_scale_set" "sfabric-ss" {
   tags {
     environment = "dev"
   }
-
 }
