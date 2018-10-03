@@ -1,13 +1,16 @@
 variable "region" {
-  default = "AustraliaEast"
+  description = "Default Region for the sfabric cluster"
+  default     = "AustraliaEast"
 }
 
 variable "address_space" {
-  default = "10.0.0.0/16"
+  description = "Supernet address space where the sfabric cluster will be deployed"
+  default     = "10.0.0.0/16"
 }
 
 variable "subnet1" {
-  default = "10.0.2.0/24"
+  description = "Subnet Address space where the sfabric cluster will be deployed"
+  default     = "10.0.2.0/24"
 }
 
 resource "random_string" "postfix" {
@@ -23,13 +26,16 @@ locals {
 }
 
 variable "vnet_name" {
-  default = "sfabric-net"
+  description = "Name for the vnet"
+  default     = "sfabric-net"
 }
 
 variable "frontend_sfabric" {
-  default = "sfabric-ip"
+  description = "Name for the Frontend service Fabric IP"
+  default     = "sfabric-ip"
 }
 
 variable "frontend_app" {
-  default = "app-ip"
+  description = "Name for the App IP"
+  default     = "app-ip"
 }
